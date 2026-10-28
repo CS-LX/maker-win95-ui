@@ -1,0 +1,138 @@
+{
+  "version": "1.0.0",
+  "date": "2026-10-28",
+  "platform": "Windows native; simulated touch and UI scale; actual DPR 1",
+  "runtime": "bf3316fd21de510af2fec2a9df99d476536f1b1e",
+  "suites": [
+    {
+      "size": [
+        1100,
+        720
+      ],
+      "density": "compact",
+      "ui_scale": 1.0,
+      "checks": 29,
+      "failures": 0,
+      "metrics": [
+        "lifecycle50_seconds=0.3470 widgets=4",
+        "idle1000_seconds=0.0080"
+      ]
+    },
+    {
+      "size": [
+        390,
+        844
+      ],
+      "density": "touch",
+      "ui_scale": 1.0,
+      "checks": 29,
+      "failures": 0,
+      "metrics": [
+        "lifecycle50_seconds=0.4680 widgets=4",
+        "idle1000_seconds=0.0130"
+      ]
+    },
+    {
+      "size": [
+        844,
+        390
+      ],
+      "density": "touch",
+      "ui_scale": 1.0,
+      "checks": 29,
+      "failures": 0,
+      "metrics": [
+        "lifecycle50_seconds=0.4950 widgets=4",
+        "idle1000_seconds=0.0160"
+      ]
+    },
+    {
+      "size": [
+        1100,
+        720
+      ],
+      "density": "compact",
+      "ui_scale": 2.0,
+      "checks": 29,
+      "failures": 0,
+      "metrics": [
+        "lifecycle50_seconds=0.5480 widgets=4",
+        "idle1000_seconds=0.0120"
+      ]
+    }
+  ],
+  "captures": [
+    {
+      "file": "screenshots/desktop.png",
+      "configuration": "desktop-controls-assistant-1100x720-compact-1",
+      "metrics": [
+        "frames=109 mean_ms=20.325 p95_ms=30.940"
+      ]
+    },
+    {
+      "file": "screenshots/data.png",
+      "configuration": "gallery-data-last-row-1100x720-compact-1",
+      "metrics": [
+        "frames=79 mean_ms=16.879 p95_ms=17.363"
+      ]
+    },
+    {
+      "file": "screenshots/icons.png",
+      "configuration": "gallery-icons-default-1100x720-compact-1",
+      "metrics": [
+        "frames=49 mean_ms=16.782 p95_ms=17.026"
+      ]
+    },
+    {
+      "file": "screenshots/portrait.png",
+      "configuration": "gallery-forms-default-390x844-touch-1",
+      "metrics": [
+        "frames=59 mean_ms=5.223 p95_ms=5.563"
+      ]
+    },
+    {
+      "file": "screenshots/landscape.png",
+      "configuration": "gallery-windows-modal-844x390-touch-1",
+      "metrics": [
+        "frames=59 mean_ms=16.757 p95_ms=17.286"
+      ]
+    },
+    {
+      "file": "screenshots/scale2.png",
+      "configuration": "gallery-forms-default-1100x720-compact-2.0",
+      "metrics": [
+        "frames=59 mean_ms=16.818 p95_ms=17.423"
+      ]
+    },
+    {
+      "file": "screenshots/live-texture.png",
+      "configuration": "minimal-controls-live-1100x720-compact-1",
+      "metrics": [
+        "frames=109 mean_ms=5.241 p95_ms=5.551"
+      ]
+    },
+    {
+      "file": "screenshots/menu.png",
+      "configuration": "gallery-windows-submenu-390x844-touch-1",
+      "metrics": [
+        "frames=59 mean_ms=16.755 p95_ms=17.322"
+      ]
+    }
+  ],
+  "unverified": [
+    "physical Android/iOS",
+    "IME composition/candidate UI",
+    "mobile keyboard",
+    "Web export",
+    "hardware DPR > 1",
+    "screen reader"
+  ],
+  "clean_install": {
+    "native_suite_pass": true,
+    "examples": [
+      "desktop",
+      "gallery",
+      "minimal"
+    ]
+  }
+}
