@@ -6,6 +6,8 @@ Native Windows 95 style components for **TapTap Maker / UrhoX Lua 5.4**. Yoga la
 
 ![Native desktop with Byte](docs/screenshots/desktop.png)
 
+The current main branch also contains the Maker integration acceptance fixes: explicit dynamic-factory types, numeric NanoVG anti-alias flags, safe UTF-8 length handling, and task buttons sized for host font overrides. These are newer than the immutable v1.1.0 ZIP; pin a main commit to include them.
+
 ## Install in a Maker project
 
 1. Download the versioned ZIP from [Releases](https://github.com/CS-LX/maker-win95-ui/releases/tag/v1.1.0), or check out tag `v1.1.0`. Pin the release commit when integrating.

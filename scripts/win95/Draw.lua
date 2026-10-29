@@ -26,7 +26,7 @@ function D.input(n,l,t)
     D.edge(n,l.x+1,l.y+1,l.w-2,l.h-2,t.dark,t.face)
 end
 function D.checker(n,l,t)
-    D.rect(n,l.x,l.y,l.w,l.h,t.white);nvgSave(n);nvgShapeAntiAlias(n,false);nvgBeginPath(n)
+    D.rect(n,l.x,l.y,l.w,l.h,t.white);nvgSave(n);nvgShapeAntiAlias(n,0);nvgBeginPath(n)
     for y=0,math.ceil(l.h)-1 do for x=y%2,math.ceil(l.w)-1,2 do nvgRect(n,l.x+x,l.y+y,1,1) end end
     nvgFillColor(n,nvgRGBA(t.face[1],t.face[2],t.face[3],255));nvgFill(n);nvgRestore(n)
 end

@@ -1,4 +1,8 @@
 -- SPDX-License-Identifier: MIT
+---@class Win95Tween
+---@field value table<string,number>
+---@field apply fun(value:table<string,number>)|nil
+---@field new fun(value:table<string,number>,apply:function):Win95Tween
 local T={};T.__index=T
 function T.new(value,apply)
     return setmetatable({value=value or {},apply=apply,active=false,elapsed=0},T)

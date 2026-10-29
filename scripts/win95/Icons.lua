@@ -29,7 +29,7 @@ function I.draw(n,name,x,y,size,disabled)
     if type(shape)=='function' then shape(n,x,y,size,disabled);return end
     if shape[16] then
         local native=size>=24 and 32 or 16;local scale=size/native
-        nvgSave(n);nvgShapeAntiAlias(n,false)
+        nvgSave(n);nvgShapeAntiAlias(n,0)
         local function paint(offset,emboss)
             for _,group in ipairs(shape[native]) do
                 local c=emboss or group.color

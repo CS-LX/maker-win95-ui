@@ -10,7 +10,7 @@ M.defaults = {
     rowHeight=20, controlHeight=23, titleHeight=20, titleButtonWidth=17, titleButtonHeight=14, scrollbar=17, density="compact",
 }
 function M.create(overrides, density)
-    local t={}
+    local t={} ---@type table<string,any>
     for k,v in pairs(M.defaults) do if type(v)=="table" then t[k]={table.unpack(v)} else t[k]=v end end
     if density=="touch" then
         t.density="touch"; t.fontSize=15; t.rowHeight=44; t.controlHeight=44

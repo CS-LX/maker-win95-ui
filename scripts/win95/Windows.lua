@@ -199,7 +199,9 @@ function Taskbar:Sync()
                 end}
                 self.tasks_[w]=b;self.list_:AddChild(b)
             end
-            b:SetText(w.props.title or "Window");b.props.selected=w.active_ and not w.minimized_
+            local title=w.props.title or "Window"
+            b:SetWidth(math.max(128,math.min(240,UI.MeasureTextWidth(title,self.ctx_.theme.fontSize,self.ctx_.theme.font)+44)))
+            b:SetText(title);b.props.selected=w.active_ and not w.minimized_
         end
     end
     for w,b in pairs(self.tasks_) do if not exists[w] then b:Destroy();self.tasks_[w]=nil end end

@@ -56,7 +56,7 @@ function Menu:Show(items,x,y,depth,parentButton)
     for _,item in ipairs(items) do wanted=wanted+(item.separator and 8 or t.rowHeight) end
     local height=math.max(24,math.min(wanted,bounds.h-8,self.maxHeight or math.huge))
     if x+width>bounds.w and parentButton then
-        local r=parentButton:GetAbsoluteLayoutForHitTest();local root=ctx.root:GetAbsoluteLayoutForHitTest();x=r.x-root.x-width
+        local r=parentButton:GetAbsoluteLayoutForHitTest();local root=(ctx.root --[[@as Widget]]):GetAbsoluteLayoutForHitTest();x=r.x-root.x-width
     end
     x=D.clamp(x,4,bounds.w-width-4);y=D.clamp(y,4,bounds.h-height-4)
     local panel=ctx:Frame{position="absolute",left=x,top=y,width=width,height=height,padding=2,zIndex=depth}
@@ -71,7 +71,7 @@ function Menu:Show(items,x,y,depth,parentButton)
             local b=ctx:Button{menu=true,text=item.label or "",icon=item.icon,disabled=item.disabled,width="100%",height=t.rowHeight,
                 onClick=function(button)
                     if item.children then
-                        local r=button:GetAbsoluteLayoutForHitTest();local root=ctx.root:GetAbsoluteLayoutForHitTest()
+                        local r=button:GetAbsoluteLayoutForHitTest();local root=(ctx.root --[[@as Widget]]):GetAbsoluteLayoutForHitTest()
                         self:Show(item.children,r.x-root.x+r.w-2,r.y-root.y,depth+1,button)
                     else
                         self:Close();if item.action then item.action(item) end

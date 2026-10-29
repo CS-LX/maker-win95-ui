@@ -4,6 +4,8 @@ Date: 2026-10-29, Asia/Shanghai; v1.1.0. Scope: standalone native library, not i
 
 ## Actual environment
 
+Integration acceptance follow-up (2026-10-29): re-ran all 33 native cases at 1100×720, 844×390 touch, 390×844 touch and scale 2; verified the v1.1.0 release ZIP SHA-256 and ran its extracted clean-install native cases and live-texture capture. Maker's project-wide EmmyLua check additionally found missing dynamic-factory/optional-field annotations and numeric NanoVG flag types. Main corrects these, guards `utf8.len`'s optional return and sizes task buttons for overridden fonts; the published v1.1.0 tag/ZIP is unchanged. Native syntax and 33 cases were rerun after the correction. Native OS control was unavailable during this independent pass; physical phone, IME and soft keyboard remain unverified.
+
 | Item | Observed value |
 |---|---|
 | OS | Windows 11 Home Chinese, 10.0.26200, x64 |

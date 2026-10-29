@@ -27,7 +27,8 @@ function Text:SetValue(value)
     end
     local previous=self.props.value;self.error_=nil;Native.SetValue(self,value)
     if previous~=self.props.value then self:DispatchEvent("change",self,self.props.value) end
-    self.state.cursorPos=math.min(self.state.cursorPos or 0,utf8.len(value));return self
+    local length=utf8.len(value) or #value
+    self.state.cursorPos=math.min(self.state.cursorPos or 0,length);return self
 end
 function Text:OnTextInput(text)
     if not self:Alive() then return end

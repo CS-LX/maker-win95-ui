@@ -7,6 +7,37 @@ local Base=require("win95.Base")
 local Theme=require("win95.Theme")
 local Tween=require("win95.Tween")
 local D=require("win95.Draw")
+---@class Win95Context
+---@field menu_ any
+---@field active_ any
+---@field Frame fun(self:Win95Context, props:table):any
+---@field Label fun(self:Win95Context, props:table):any
+---@field Panel fun(self:Win95Context, props:table):any
+---@field Button fun(self:Win95Context, props:table):any
+---@field IconButton fun(self:Win95Context, props:table):any
+---@field Icon fun(self:Win95Context, props:table):any
+---@field DesktopIcon fun(self:Win95Context, props:table):any
+---@field Separator fun(self:Win95Context, props:table):any
+---@field GroupBox fun(self:Win95Context, props:table):any
+---@field ProgressBar fun(self:Win95Context, props:table):any
+---@field Busy fun(self:Win95Context, props:table):any
+---@field Checkbox fun(self:Win95Context, props:table):any
+---@field Toggle fun(self:Win95Context, props:table):any
+---@field RadioGroup fun(self:Win95Context, props:table):any
+---@field Slider fun(self:Win95Context, props:table):any
+---@field TextInput fun(self:Win95Context, props:table):any
+---@field TextArea fun(self:Win95Context, props:table):any
+---@field NumberInput fun(self:Win95Context, props:table):any
+---@field ScrollView fun(self:Win95Context, props:table):any
+---@field ListView fun(self:Win95Context, props:table):any
+---@field Table fun(self:Win95Context, props:table):any
+---@field TreeView fun(self:Win95Context, props:table):any
+---@field Tabs fun(self:Win95Context, props:table):any
+---@field StatusBar fun(self:Win95Context, props:table):any
+---@field Select fun(self:Win95Context, props:table):any
+---@field MenuBar fun(self:Win95Context, props:table):any
+---@field ImageViewer fun(self:Win95Context, props:table):any
+---@field Thumbnails fun(self:Win95Context, props:table):any
 local Context={};Context.__index=Context
 local factories={}
 for _,name in ipairs({"Panel","Frame","Label","Button","IconButton","Icon","DesktopIcon","Separator","GroupBox","ProgressBar","Busy","Checkbox","Toggle","RadioGroup","Slider"}) do factories[name]="Controls" end
@@ -47,7 +78,7 @@ function Context:init(container,o)
         if self:IsWithin(w,self.root) then
             -- Gesture subscribes before the UI hit-test callback. Preserve the original
             -- target before a drag leaves its title/slider; do not alter host targets.
-            local gestureTarget=w;local ancestor=w
+            local gestureTarget=w;local ancestor=w --[[@as any]]
             while ancestor and ancestor~=self.root do
                 if ancestor.win95PanTarget_ or ancestor.win95Scroll_ then gestureTarget=ancestor;break end
                 ancestor=ancestor.parent
