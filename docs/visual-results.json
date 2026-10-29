@@ -1,0 +1,119 @@
+{
+  "version": "1.1.0",
+  "date": "2026-10-29",
+  "reference": {
+    "core": "10.0.6",
+    "icons": "Original Maker icons on both sides",
+    "browser": "156.0.4314.50",
+    "viewport": [
+      960,
+      640
+    ],
+    "font": "\"MS Sans Serif\", CJK, sans-serif",
+    "material": "#c3c7cb",
+    "windows": [
+      {
+        "title": "Display Properties / 显示属性",
+        "x": 24,
+        "y": 24,
+        "w": 440,
+        "h": 328
+      },
+      {
+        "title": "Documents / 文档",
+        "x": 496,
+        "y": 24,
+        "w": 440,
+        "h": 328
+      },
+      {
+        "title": "Icon catalog / 图标目录",
+        "x": 24,
+        "y": 380,
+        "w": 912,
+        "h": 226
+      }
+    ]
+  },
+  "native": {
+    "viewport": [
+      960,
+      640
+    ],
+    "ui_scale": 1,
+    "actual_dpr": 1
+  },
+  "pixel_samples": {
+    "desktop": {
+      "position": [
+        5,
+        5
+      ],
+      "rgb": [
+        0,
+        128,
+        128
+      ],
+      "pass": true
+    },
+    "panel": {
+      "position": [
+        300,
+        220
+      ],
+      "rgb": [
+        195,
+        199,
+        203
+      ],
+      "pass": true
+    },
+    "active_title": {
+      "position": [
+        300,
+        30
+      ],
+      "rgb": [
+        0,
+        14,
+        122
+      ],
+      "pass": true
+    },
+    "inactive_title": {
+      "position": [
+        800,
+        30
+      ],
+      "rgb": [
+        127,
+        120,
+        127
+      ],
+      "pass": true
+    },
+    "white_interior": {
+      "position": [
+        800,
+        280
+      ],
+      "rgb": [
+        255,
+        255,
+        255
+      ],
+      "pass": true
+    }
+  },
+  "images_sha256": {
+    "react95.png": "f208aa9e7255f162dcf45d129f137308d3cb8d6e41c9db249eb7f1c210b35cf7",
+    "visual-controls-default-960x640-compact-1.png": "c18abe70221138856acf4a2d3e05fa6b45278a7ebec4d25b20e36ac24262d0db"
+  },
+  "method": "Actual component renders; same strings, window rectangles and requested controls; source pixels pasted without rescaling.",
+  "limits": [
+    "No claim of whole-image pixel equality",
+    "OFL W95font uses optical 13-unit size vs upstream CSS 12px; CJK uses Noto Sans SC",
+    "Native shadow stays inside widget bounds; browser shadow extends one pixel",
+    "Upstream icon comparison is generated locally and never copied into public assets/docs"
+  ]
+}

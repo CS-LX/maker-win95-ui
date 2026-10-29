@@ -1,0 +1,11 @@
+{
+  "source": "https://madebyarne.github.io/w95font/assets/files/w95font.zip",
+  "archive_sha256": "8659859534c3e1d9b031a295d5ae37a4d944cb7693cd68d8ddc5565a604c831d",
+  "author": "Alle Sava (per included author README and font copyright metadata)",
+  "license": "OFL-1.1",
+  "modified": false,
+  "files": {
+    "W95font.otf": "f8b487b6886231ff4839f8615134ee70af7a337408a64cda7d9bd71d9f4cf9ea",
+    "W95font-Bold.otf": "4927d6f74a3ef648a2edc2e8a1e244d3c755366b290e51c65ca0b87111e83b2d"
+  }
+}

@@ -54,7 +54,7 @@ def art():
                 i=(y*w+x)*4;p[i:i+4]=bytes(color)
         png(OUT/('images/'+name+'.png'),w,h,p)
 
-def font():
+def font(bold_only=False):
     from fontTools.ttLib import TTFont
     from fontTools.varLib.instancer import instantiateVariableFont
     from fontTools import subset
@@ -62,23 +62,49 @@ def font():
     base=f'https://raw.githubusercontent.com/google/fonts/{commit}/ofl/notosanssc/'
     data=urllib.request.urlopen(base+'NotoSansSC%5Bwght%5D.ttf',timeout=90).read()
     source_hash=hashlib.sha256(data).hexdigest()
+    assert source_hash=='a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da','review changed font source before regenerating'
     face=TTFont(io.BytesIO(data));del data
     # Basic CJK, Latin, punctuation and symbols; omit rare extension planes and variable weights.
     chars=list(range(0x20,0x100))+list(range(0x2000,0x2070))+list(range(0x2190,0x2200))+list(range(0x2500,0x2600))+list(range(0x3000,0x3040))+list(range(0x4e00,0xa000))+list(range(0xff00,0xfff0))
     opts=subset.Options();opts.recalc_timestamp=False;opts.name_IDs=['*'];opts.name_legacy=True;opts.name_languages=['*']
     sub=subset.Subsetter(options=opts);sub.populate(unicodes=chars);sub.subset(face)
-    face=instantiateVariableFont(face,{'wght':400},inplace=True)
+    weight=700 if bold_only else 400
+    face=instantiateVariableFont(face,{'wght':weight},inplace=True)
     for record in face['name'].names:
         if record.nameID in (1,4,6,16):
-            text='Maker Classic Sans' if record.nameID!=6 else 'MakerClassicSans-Regular'
+            text='Maker Classic Sans' if record.nameID!=6 else ('MakerClassicSans-Bold' if bold_only else 'MakerClassicSans-Regular')
             record.string=text.encode(record.getEncoding())
+        elif record.nameID in (2,17):record.string=('Bold' if bold_only else 'Regular').encode(record.getEncoding())
     dest=OUT/'fonts';dest.mkdir(exist_ok=True)
-    face.save(dest/'MakerClassicSans.ttf');face.close()
-    (dest/'OFL.txt').write_bytes(urllib.request.urlopen(base+'OFL.txt',timeout=20).read())
-    (dest/'source.json').write_text(json.dumps({'repository':'google/fonts','commit':commit,'path':'ofl/notosanssc/NotoSansSC[wght].ttf','source_sha256':source_hash,'derivative':'Maker Classic Sans; weight 400; Unicode ranges in tools/assets.py','license':'OFL-1.1'},indent=2)+'\n','utf-8')
-    print('font', (dest/'MakerClassicSans.ttf').stat().st_size,'bytes',source_hash)
+    filename='MakerClassicSans-Bold.ttf' if bold_only else 'MakerClassicSans.ttf'
+    face.save(dest/filename);face.close()
+    notice=urllib.request.urlopen(base+'OFL.txt',timeout=20).read().decode('utf-8')
+    (dest/'OFL.txt').write_text('\n'.join(line.rstrip() for line in notice.splitlines())+'\n','utf-8')
+    (dest/'source.json').write_text(json.dumps({'repository':'google/fonts','commit':commit,'path':'ofl/notosanssc/NotoSansSC[wght].ttf','source_sha256':source_hash,'derivative':'Maker Classic Sans; weights 400 and 700; Unicode ranges in tools/assets.py','license':'OFL-1.1'},indent=2)+'\n','utf-8')
+    print('font',filename,(dest/filename).stat().st_size,'bytes',source_hash)
+
+def classic_font():
+    """Author-distributed OFL originals, not Microsoft's converted font files."""
+    import zipfile
+    url='https://madebyarne.github.io/w95font/assets/files/w95font.zip'
+    data=urllib.request.urlopen(url,timeout=30).read()
+    digest=hashlib.sha256(data).hexdigest()
+    assert digest=='8659859534c3e1d9b031a295d5ae37a4d944cb7693cd68d8ddc5565a604c831d','upstream font archive changed; review before replacing'
+    dest=OUT/'fonts';dest.mkdir(exist_ok=True)
+    with zipfile.ZipFile(io.BytesIO(data)) as z:
+        for name in ('W95font.otf','W95font-Bold.otf'):
+            (dest/name).write_bytes(z.read('w95font/'+name))
+        for source,target in [('OFL.txt','W95font-OFL.txt'),('readme.txt','W95font-README.txt')]:
+            text=z.read('w95font/'+source).decode('utf-8').replace('\r\r\n','\n').replace('\r\n','\n')
+            (dest/target).write_text('\n'.join(line.rstrip() for line in text.splitlines())+'\n','utf-8')
+    meta={'source':url,'archive_sha256':digest,'author':'Alle Sava (per included author README and font copyright metadata)',
+          'license':'OFL-1.1','modified':False,'files':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in [dest/'W95font.otf',dest/'W95font-Bold.otf']}}
+    (dest/'W95font-source.json').write_text(json.dumps(meta,indent=2)+'\n','utf-8')
+    print('Classic regular/bold installed:',digest)
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--font',action='store_true');a=p.parse_args();art()
+    p=argparse.ArgumentParser();p.add_argument('--font',action='store_true');p.add_argument('--cjk-bold',action='store_true');p.add_argument('--classic-font',action='store_true');a=p.parse_args();art()
     if a.font:font()
+    if a.cjk_bold:font(True)
+    if a.classic_font:classic_font()
     print('Original Byte sprite and two original sample images rebuilt.')

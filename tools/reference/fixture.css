@@ -1,0 +1,9 @@
+@font-face{font-family:CJK;src:url('/assets/win95/fonts/MakerClassicSans.ttf')}
+@font-face{font-family:CJK;src:url('/assets/win95/fonts/MakerClassicSans-Bold.ttf');font-weight:700}
+body{margin:0;background:#008080;font-family:'MS Sans Serif',CJK,sans-serif;font-size:12px}
+#root{position:relative;width:960px;height:640px;overflow:hidden}
+*{box-sizing:border-box}
+#root div{white-space:pre}
+img{image-rendering:pixelated;flex-shrink:0}
+.separator{position:absolute;height:2px;border-top:1px solid #868a8e;border-bottom:1px solid #fff}
+.disabledIcon{filter:grayscale(1);opacity:.5}

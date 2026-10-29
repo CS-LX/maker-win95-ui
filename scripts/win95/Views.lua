@@ -21,20 +21,27 @@ end
 local function scrollbars(self,n)
     local t=self.ctx_.theme;local l=self:GetAbsoluteLayout();local hit=self:GetAbsoluteLayoutForHitTest()
     local width=t.scrollbar;local dx,dy=hit.x-l.x,hit.y-l.y
-    self.vTrackBounds_=nil;self.vScrollbarBounds_=nil;self.hTrackBounds_=nil;self.hScrollbarBounds_=nil
+    self.vTrackBounds_=nil;self.vScrollbarBounds_=nil;self.hTrackBounds_=nil;self.hScrollbarBounds_=nil;self.arrowButtons_={}
+    local function arrow(x,y,icon,axis,delta)
+        local box={x=x,y=y,w=width,h=width};D.bevel(n,box,t,false,t.face)
+        Icons.draw(n,icon,x+(width-12)/2,y+(width-12)/2,12,false)
+        self.arrowButtons_[#self.arrowButtons_+1]={x=x+dx,y=y+dy,w=width,h=width,axis=axis,delta=delta}
+    end
     if self.props.scrollY and self.contentHeight_>l.h then
-        local track={x=l.x+l.w-width,y=l.y,w=width,h=l.h}
-        local height=math.min(l.h,math.max(t.density=="touch" and 44 or 24,l.h*l.h/self.contentHeight_))
-        local y=l.y+(l.h-height)*D.clamp(self.state.scrollY/(self.contentHeight_-l.h),0,1)
-        D.rect(n,track.x,track.y,track.w,track.h,t.light);D.bevel(n,{x=track.x,y=y,w=width,h=height},t,false,t.face)
-        self.vTrackBounds_={x=track.x+dx,y=track.y+dy,w=width,h=l.h}
+        local track={x=l.x+l.w-width,y=l.y+width,w=width,h=math.max(1,l.h-2*width)}
+        local height=math.min(track.h,math.max(t.density=="touch" and 44 or 17,track.h*l.h/self.contentHeight_))
+        local y=track.y+(track.h-height)*D.clamp(self.state.scrollY/(self.contentHeight_-l.h),0,1)
+        D.checker(n,track,t);D.bevel(n,{x=track.x,y=y,w=width,h=height},t,false,t.face)
+        self.vTrackBounds_={x=track.x+dx,y=track.y+dy,w=width,h=track.h}
         self.vScrollbarBounds_={x=track.x+dx,y=y+dy,w=width,h=height}
+        arrow(track.x,l.y,'up','y',-t.rowHeight);arrow(track.x,l.y+l.h-width,'down','y',t.rowHeight)
     end
     if self.props.scrollX and self.contentWidth_>l.w then
-        local size=math.min(l.w,math.max(24,l.w*l.w/self.contentWidth_));local x=l.x+(l.w-size)*D.clamp(self.state.scrollX/(self.contentWidth_-l.w),0,1)
-        D.rect(n,l.x,l.y+l.h-width,l.w,width,t.light);D.bevel(n,{x=x,y=l.y+l.h-width,w=size,h=width},t,false,t.face)
-        self.hTrackBounds_={x=l.x+dx,y=l.y+l.h-width+dy,w=l.w,h=width}
+        local range=math.max(1,l.w-2*width);local size=math.min(range,math.max(17,range*l.w/self.contentWidth_));local x=l.x+width+(range-size)*D.clamp(self.state.scrollX/(self.contentWidth_-l.w),0,1)
+        D.checker(n,{x=l.x+width,y=l.y+l.h-width,w=range,h=width},t);D.bevel(n,{x=x,y=l.y+l.h-width,w=size,h=width},t,false,t.face)
+        self.hTrackBounds_={x=l.x+width+dx,y=l.y+l.h-width+dy,w=range,h=width}
         self.hScrollbarBounds_={x=x+dx,y=l.y+l.h-width+dy,w=size,h=width}
+        arrow(l.x,l.y+l.h-width,'left','x',-t.rowHeight);arrow(l.x+l.w-width,l.y+l.h-width,'right','x',t.rowHeight)
     end
 end
 local function cancelScroll(self,e)
@@ -54,7 +61,19 @@ end
 Scroll.RenderScrollbars=scrollbars;Scroll.OnPointerCancel=cancelScroll
 function Scroll:OnPointerDown(e)
     if not self:Alive() then return true end
-    Base.OnPointerDown(self,e);return NativeScroll.OnPointerDown(self,e)
+    Base.OnPointerDown(self,e);if self.pointer_~=e.pointerId then return true end
+    for _,b in ipairs(self.arrowButtons_ or {}) do if D.inside(b,e.x,e.y) then
+        local x,y=self:GetScroll();self:SetScroll(b.axis=='x' and math.max(0,x+b.delta) or x,b.axis=='y' and math.max(0,y+b.delta) or y);return true
+    end end
+    local result=NativeScroll.OnPointerDown(self,e)
+    if self.isDraggingScrollbarV_ then self.scrollbarDragTrackRangeV_=self.vTrackBounds_.h-self.vScrollbarBounds_.h end
+    if self.isDraggingScrollbarH_ then self.scrollbarDragTrackRangeH_=self.hTrackBounds_.w-self.hScrollbarBounds_.w end
+    return result
+end
+function Scroll:GetPriorityHitAreas()
+    local areas=NativeScroll.GetPriorityHitAreas(self) or {}
+    for _,b in ipairs(self.arrowButtons_ or {})do areas[#areas+1]=b end
+    return #areas>0 and areas or nil
 end
 function Scroll:OnPointerUp(e) NativeScroll.OnPointerUp(self,e);Base.OnPointerUp(self,e) end
 function Scroll:OnPanStart(e)
@@ -64,7 +83,7 @@ end
 function Scroll:OnPanMove(e) if self.panPointer_==e.pointerId then NativeScroll.OnPanMove(self,e) end end
 function Scroll:OnPanEnd(e) if self.panPointer_~=e.pointerId then return end;NativeScroll.OnPanEnd(self,e);self.panPointer_=nil end
 function Scroll:OnWheel(dx,dy) if self:Alive() then return NativeScroll.OnWheel(self,dx,dy) end;return true end
-function Scroll:Render(n) NativeScroll.Render(self,n);D.bevel(n,self:GetAbsoluteLayout(),self:Theme(),true) end
+function Scroll:Render(n) NativeScroll.Render(self,n);if self.props.chrome~=false then D.input(n,self:GetAbsoluteLayout(),self:Theme()) end end
 
 local Row=C.Button:Extend("Win95ListRow")
 function Row:OnClick(e)
@@ -105,6 +124,7 @@ function List:Init(p)
     }
     local sv=self.virtual_.scrollView_;sv.ctx_=self.ctx_;sv.props.context=self.ctx_;sv.focusable=false;sv.props.borderRadius=0;sv.win95Scroll_=true
     sv.RenderScrollbars=scrollbars;sv.OnPointerCancel=cancelScroll;sv.Emit=Base.Emit
+    sv.OnPointerDown=Scroll.OnPointerDown;sv.OnPointerUp=Scroll.OnPointerUp;sv.GetPriorityHitAreas=Scroll.GetPriorityHitAreas
     sv.Alive=Base.Alive;sv.OnPanStart=Scroll.OnPanStart;sv.OnPanMove=Scroll.OnPanMove;sv.OnPanEnd=Scroll.OnPanEnd
     self:AddChild(self.virtual_)
     if p.value~=nil then self:SetValue(p.value) end

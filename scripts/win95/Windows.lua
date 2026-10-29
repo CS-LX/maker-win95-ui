@@ -40,37 +40,41 @@ function Drag:OnPanEnd(e) if e and self.panPointer_~=e.pointerId then return end
 function Drag:Render(n)
     local l=self:GetAbsoluteLayout();local t=self:Theme();local w=self.props.window
     if self.props.resize then
-        for offset=4,14,5 do for step=0,14-offset do
-            D.rect(n,l.x+l.w-3-step,l.y+l.h-offset+step-2,1,1,t.shadow)
-            D.rect(n,l.x+l.w-2-step,l.y+l.h-offset+step-2,1,1,t.white)
+        for length=3,11,4 do for step=0,length do
+            D.rect(n,l.x+l.w-3-step,l.y+l.h-3-length+step,1,1,t.shadow)
+            D.rect(n,l.x+l.w-2-step,l.y+l.h-3-length+step,1,1,t.white)
         end end
     else
-        D.rect(n,l.x,l.y,l.w,l.h,w.active_ and t.title or t.inactiveTitle)
-        Icons.draw(n,w.props.icon or "computer",l.x+5,l.y+(l.h-16)/2,16,false)
-        D.clip(n,{x=l.x+26,y=l.y,w=math.max(0,l.w-30),h=l.h},function()D.text(n,w.props.title or "Window",l.x+26,l.y+l.h/2,t,t.white)end)
+        Icons.draw(n,w.props.icon or "computer",l.x+2,math.floor(l.y+(l.h-16)/2),16,false)
+        D.clip(n,{x=l.x+22,y=l.y,w=math.max(0,l.w-24),h=l.h},function()D.text(n,w.props.title or "Window",l.x+22,l.y+l.h/2,t,w.active_ and t.titleText or t.inactiveTitleText,nil,nil,true)end)
     end
 end
 local Window=C.Frame:Extend("Win95Window")
 function Window:Init(p)
-    p.position="absolute";p.padding=3;p.gap=2;p.overflow="hidden";C.Frame.Init(self,p)
+    p.position="absolute";p.padding=2;p.gap=0;p.overflow="hidden";C.Frame.Init(self,p)
     self.win95Window_=true;self.active_=false;self.minimized_=false;self.maximized_=false
     self.rect_={x=p.x or 24,y=p.y or 24,w=p.width or 460,h=p.height or 320}
-    local t=self:Theme();local row=self.ctx_:Panel{height=t.titleHeight,flexDirection="row",gap=2}
-    self.titlebar_=Drag{context=self.ctx_,window=self,flexGrow=1,flexShrink=1};row:AddChild(self.titlebar_)
+    local t=self:Theme();local row=self.ctx_:Panel{height=t.titleHeight,flexShrink=0,flexDirection="row",gap=2,paddingRight=t.density=='touch' and 0 or 2,alignItems='center',backgroundColor=t.inactiveTitle}
+    self.titleRow_=row
+    self.titlebar_=Drag{context=self.ctx_,window=self,flexGrow=1,flexShrink=1,height='100%'};row:AddChild(self.titlebar_)
     local function control(icon,callback)
-        local b=self.ctx_:IconButton{icon=icon,width=t.titleHeight,height=t.titleHeight,onClick=callback};row:AddChild(b);return b
+        local b=self.ctx_:IconButton{icon=icon,width=t.titleButtonWidth,height=t.titleButtonHeight,minWidth=t.titleButtonWidth,iconSize=12,paddingHorizontal=0,titleControl=true,onClick=callback};row:AddChild(b);return b
     end
     if p.minimizable==true or (p.minimizable~=false and self.ctx_.taskbar_) then self.minButton_=control("minimize",function()self:Minimize()end) end
     if p.maximizable~=false then self.maxButton_=control("maximize",function()if self.maximized_ then self:Restore() else self:Maximize() end end) end
     if p.closable~=false then self.closeButton_=control("close",function()self:Close()end) end
     self:AddChild(row)
-    self.content=self.ctx_:ScrollView{width="100%",flexGrow=1,flexBasis=0,backgroundColor=t.face,padding=p.contentPadding or 8,gap=t.gap}
+    self.content=self.ctx_:ScrollView{width="100%",flexGrow=1,flexBasis=0,backgroundColor=t.face,padding=p.contentPadding or 6,gap=t.gap,chrome=false}
     self:AddChild(self.content)
     if p.resizable~=false then
         self.grip_=Drag{context=self.ctx_,window=self,resize=true,position="absolute",right=0,bottom=0,width=t.density=="touch" and 44 or 20,height=t.density=="touch" and 44 or 20}
         self:AddChild(self.grip_)
     end
     if p.content then self.content:AddChild(p.content) end
+end
+function Window:Render(n)
+    local t=self:Theme();D.window(n,self:GetAbsoluteLayout(),t)
+    self.titleRow_.props.backgroundColor=self.active_ and t.title or t.inactiveTitle
 end
 function Window:SetRect(x,y,w,h)
     local b=self.ctx_:Bounds();if b.w<1 or b.h<1 then b={w=800,h=600} end

@@ -7,9 +7,10 @@ function H.start(build)
     local options=WIN95_TEST_OPTIONS or {}
     UI.Init{
         theme="default-dark",
-        fonts={{family="sans",weights={normal="win95/fonts/MakerClassicSans.ttf",bold="win95/fonts/MakerClassicSans.ttf"}}},
+        fonts=Win.Fonts.options(),
         scale=options.scale and function()return options.scale end or UI.Scale.DEFAULT,
     }
+    Win.Fonts.attach(UI)
     local root=UI.Panel{width="100%",height="100%",borderRadius=0,backgroundColor={0,128,128,255}}
     UI.SetRoot(root);UI.Layout()
     input.mouseVisible=true;input.mouseMode=MM_FREE

@@ -18,13 +18,13 @@ All entries below are implemented, not placeholders. “Implemented” describes
 | Select | Menus | Options model, actual value, keyboard open/select, disabled options, focus return |
 | Slider | C | Pointer/touch drag, keyboard steps/Home/End, clamped stepped values/changeEnd |
 | Tabs | Views | Switch actual content visibility, keyboard arrows, disabled tabs |
-| ScrollView | Views / engine ScrollView | Native wheel/pan/momentum, classic interactive scrollbar, cancellation; reserves vertical scrollbar gutter |
+| ScrollView | Views / engine ScrollView | Native wheel/pan/momentum, arrow steps, draggable beveled thumb, checker track, cancellation; reserves vertical scrollbar gutter |
 | ListView | Views / engine VirtualList | Stable IDs, single selection, recycled fixed-height rows, keyboard navigation; bounds initial unattached Yoga measurement |
 | Table | Views / ListView | Weighted columns, clickable sort headers, single selected row, callbacks |
 | TreeView | Views / ListView | Stable-ID node model, flattened visible rows, expansion, keyboard parent/child, click/tap expand |
 | MenuBar | Menus | Host menu definitions, keyboard movement/open, wraps on narrow widths |
 | PopupMenu, ContextMenu, StartMenu | Menus | Scroll, selected/checked/disabled items, outside dismissal, nested submenus, flipping/clamping, Escape/Tab and type-to-first-letter |
-| Window + title bar | Windows | Close, optional minimize, maximize/restore, drag, resize grip, active/inactive, context-local layer order |
+| Window + title bar | Windows | Continuous active/inactive title background, bold title, 17×14 compact actions; close/minimize/maximize/restore, drag, clipped resize grip, layer order |
 | Modal, MessageBox | Windows | Pointer blocker, focus trap/restore, nested modal stack, confirm/cancel/result, Escape |
 | Desktop, DesktopIcon | Windows / C | Host app model; single tap/click launches; no OS/filesystem access |
 | Taskbar | Windows | Window registration, activation/minimize/restore, title/state updates, horizontal scrolling, StartMenu |
@@ -32,14 +32,14 @@ All entries below are implemented, not placeholders. “Implemented” describes
 | ImageViewer | Media / nvgCreateImage or nvgCreateVideo | Lazy load, reference count, borrowed Texture2D, contain/cover, crop rectangle, ready/error callbacks |
 | Thumbnails | Media | Image/texture-backed selectable buttons, disabled items, host value callbacks |
 | Rect/opacity tween | Tween + Context | Cancel, redirect continuously from current value, completion/cancellation callback; windows preserve rect state |
-| Icons | Icons | 29 original 16-grid geometric icons; 16/32 and arbitrary size, disabled rendering, registration |
+| Icons | Icons + icondata | 29 original designs, separate 16×16 and 32×32 pixel artwork; shaded surfaces/perspective, grayscale disabled rendering, lazy per-name data and custom registration |
 | Assistant | Assistant + Media | Replaceable frame/sheet character, idle/greet/point/think, queued actions/cancel, move tween, Chinese speech, touch dismissal, bounds |
 
 ## State and density policy
 
 Normal and hover keep the same classic Windows 95 bevel (no modern hover glow). Pressed buttons invert the bevel and offset text. Keyboard focus uses a dotted rectangle. Selected rows, menus and tabs show selection consistently. Disabled controls do not activate or edit; text/icons use the disabled palette. Window titles show active/inactive color. Busy animation and selection semantics are only applied where meaningful.
 
-`compact`: 28-unit controls / 26-unit rows. `touch`: 44-unit controls, rows, title actions and tabs, and 44-unit resize hit area. Checkbox/radio marks stay small inside their full-row targets. The scrollbar has a narrower classic visual; ordinary touch scrolling does not depend on hitting it. Core actions have single-click/tap controls; hover tips, right click and precision dragging are optional.
+`compact`: 23-unit controls / 20-unit rows and title bar; title actions 17×14. `touch`: 44-unit controls, rows, title actions and tabs, and 44-unit resize hit area. Checkbox/radio marks stay small inside their full-row targets. The scrollbar has a narrower classic visual (17 compact, 24 touch); ordinary touch scrolling does not depend on hitting it. Core actions have single-click/tap controls; hover tips, right click and precision dragging are optional. Font sizes are 13 compact / 15 touch; the 13-unit OFL replacement is an optical match for the reference's differently proportioned 12px browser font.
 
 ## Deliberate v1 scope
 

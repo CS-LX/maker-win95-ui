@@ -14,6 +14,22 @@ function D.bevel(n,l,t,inset,fill)
     D.edge(n,l.x,l.y,l.w,l.h,inset and t.shadow or t.white,inset and t.white or t.dark)
     D.edge(n,l.x+1,l.y+1,l.w-2,l.h-2,inset and t.dark or t.light,inset and t.light or t.shadow)
 end
+-- React95's frame shadow has a one-pixel outside shadow. Draw inside the owned
+-- box, reserving that last pixel so clipping never drops the right/bottom edge.
+function D.window(n,l,t)
+    D.rect(n,l.x,l.y,l.w,l.h,t.face)
+    D.edge(n,l.x,l.y,l.w,l.h,t.white,t.dark)
+    D.edge(n,l.x+1,l.y+1,l.w-2,l.h-2,t.face,t.shadow)
+end
+function D.input(n,l,t)
+    D.edge(n,l.x,l.y,l.w,l.h,t.shadow,t.white)
+    D.edge(n,l.x+1,l.y+1,l.w-2,l.h-2,t.dark,t.face)
+end
+function D.checker(n,l,t)
+    D.rect(n,l.x,l.y,l.w,l.h,t.white);nvgSave(n);nvgShapeAntiAlias(n,false);nvgBeginPath(n)
+    for y=0,math.ceil(l.h)-1 do for x=y%2,math.ceil(l.w)-1,2 do nvgRect(n,l.x+x,l.y+y,1,1) end end
+    nvgFillColor(n,nvgRGBA(t.face[1],t.face[2],t.face[3],255));nvgFill(n);nvgRestore(n)
+end
 function D.focus(n,l,t,pad)
     pad=pad or 4
     for x=l.x+pad,l.x+l.w-pad,2 do D.rect(n,x,l.y+pad,1,1,t.text);D.rect(n,x,l.y+l.h-pad-1,1,1,t.text) end
@@ -22,8 +38,9 @@ end
 function D.font(n,t,size)
     nvgFontFace(n,t.font);nvgFontSize(n,size or t.fontSize)
 end
-function D.text(n,text,x,y,t,color,align,size)
-    D.font(n,t,size); nvgTextAlign(n,align or (NVG_ALIGN_LEFT+NVG_ALIGN_MIDDLE))
+function D.text(n,text,x,y,t,color,align,size,bold)
+    D.font(n,t,size);if bold then nvgFontFace(n,t.font..'-bold') end
+    nvgTextAlign(n,align or (NVG_ALIGN_LEFT+NVG_ALIGN_MIDDLE))
     color=color or t.text;nvgFillColor(n,nvgRGBA(color[1],color[2],color[3],color[4] or 255))
     nvgText(n,x,y,tostring(text or ""))
 end

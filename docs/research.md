@@ -1,6 +1,6 @@
 # Reference study and design decisions
 
-Study date: 2026-10-28. Source pins below identify what was actually read, not a floating latest version. No upstream JS/CSS implementation or bitmap/sprite/font was copied into the Lua runtime library.
+Study dates: 2026-10-28–29. Source pins below identify what was actually read, not a floating latest version. No upstream JS/CSS implementation or bitmap/sprite/font was copied into the Lua runtime library.
 
 | Source | Pin / package | Files and demos read |
 |---|---|---|
@@ -8,7 +8,7 @@ Study date: 2026-10-28. Source pins below identify what was actually read, not a
 | [react95-io/React95](https://github.com/react95-io/React95/tree/871d5335daebdda1469f66f81266523f4191a595) | `871d5335daebdda1469f66f81266523f4191a595`; package reports 0.0.0-development, so SHA is authoritative | LICENSE; original.ts theme; common/index.ts bevel primitives; Button.tsx + Button.stories.tsx; Select/useSelectState.ts + Select.tsx; Window.tsx; font README/license |
 | [clippyjs](https://github.com/pi0/clippyjs/tree/84b798e4a56ab4674d8ac45113ad80146a70e342) | npm 0.1.0, gitHead `84b798e4a56ab4674d8ac45113ad80146a70e342` | Package dependency metadata; animator.ts, queue.ts, agents/clippy/agent.ts header/frame structure, agent index |
 
-The [first Storybook](https://react95.github.io/React95/) index exposed 85 entries; the [second Storybook](https://storybook.react95.io/) exposed 50. Their story definitions, variants and interaction assertions were read. An interactive browser surface was unavailable in the development session, so this record does **not** claim manual browser interaction or screenshot review of those upstream demos. This library's own native screenshots and input interactions were separately executed and reviewed.
+The [first Storybook](https://react95.github.io/React95/) index exposed 85 entries; the [second Storybook](https://storybook.react95.io/) exposed 50. Their story definitions, variants and interaction assertions were read. For 1.1.0, the first reference's actual core 10.0.6 was additionally installed in ignored development dependencies and rendered with its real GlobalStyle, Win95 theme, Frame, TitleBar, Input, Checkbox and Button in Edge. The npm gitHead matches the source pin above. GlobalStyle.css.ts, TitleBar.css.ts, Modal.css.ts, themes/tokens/win95.ts and baseTheme.ts were read to resolve font, dimensions, colors and edge order. Real same-size browser/native captures were inspected, including a local-only upstream icon variant. This does not claim manual traversal of every upstream Storybook story; see [comparison procedure](visual-fidelity.md).
 
 ## Comparison and unification
 

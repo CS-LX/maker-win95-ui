@@ -13,6 +13,8 @@ local kit = Win95.new(hostContainer, {
 
 Call after the host's `UI.Init`. Every factory is `kit:Component{props}`. Creation returns an engine-compatible widget; `kit:Add(widget)` mounts it in the context's content layer, or use `parent:AddChild(widget)`. `Window`, `Modal`, `Taskbar`, `Desktop`, `Assistant` and popup menus mount themselves in their appropriate layers. Use `window.content:AddChild` for window contents. Native Yoga props (`width`, `height`, `flexDirection`, `gap`, `padding`, `flexGrow`, etc.) are available. Give flex/scroll layouts a definite parent size.
 
+For the bundled classic Latin + Chinese fonts: `UI.Init{fonts=Win95.Fonts.options('win95','sans')}`, then `Win95.Fonts.attach(UI,'sans')`. Both calls are explicit host decisions; use a different family and matching `theme.font` to coexist with another UI. Register normal and `family..'-bold'` when providing a custom font. The library does not register fonts on import. See the font/license and input contracts before integrating.
+
 Read managed state with `kit:GetWindows()`, `kit:GetActiveWindow()`, `window:GetWindowState()` (active/minimized/maximized/visible/rect), `image:GetStatus()` (pending/ready/error), `list:GetPoolStats()` (inUse/available/total), and `kit:Stats()` (widgets/windows/captures/resources). Returned window arrays and rect snapshots are copies; change behavior through the documented setters.
 
 ## Common operations
@@ -36,7 +38,7 @@ Callbacks receive `(widget, ...)`: `onClick(widget,event)`, `onChange(widget,val
 | Select | `options={{value,label,disabled}}`, `value`, `maxHeight`; `SetOptions`, `SetValue`, `Open()` |
 | Slider | `min/max/step/value`, `onChange`, `onChangeEnd`; `SetValue` |
 | Tabs | `tabs={{id,label,content,disabled}}`, `value`; `SetValue(id)` |
-| ScrollView | `scrollX`, `scrollY`, `showScrollbar`; engine `GetScroll`, `SetScroll(x,y)` |
+| ScrollView | `scrollX`, `scrollY`, `showScrollbar`, `chrome=false` to omit the inset frame; engine `GetScroll`, `SetScroll(x,y)` |
 | ListView | `data={{id,label,icon,disabled}}`, `value`, height; `SetData`, `SetValue(id)`, `Select(index,activate)`, `onSelect(widget,item,index)` |
 | Table | `data`, `columns={{key,title,width}}` (width is a weight); `SetData`, `SetValue`, `Sort(key)`, `onSort(widget,key,descending)`, `onSelect` |
 | TreeView | `data={{id,label,icon,disabled,children={...}}}`; `SetData`, `SetValue`, `ToggleNode(id)`, `onExpand(widget,id,expanded)`, `onNodeSelect(widget,node)` |

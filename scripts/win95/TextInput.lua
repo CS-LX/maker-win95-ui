@@ -66,7 +66,7 @@ end
 function Text:OnFocus() if self:Alive() then self.ctx_:ActivateOwner(self);Native.OnFocus(self) end end
 function Text:OnBlur() Native.OnBlur(self);self.anchor_=nil end
 function Text:Render(n)
-    Native.Render(self,n);local t=self:Theme();local l=self:GetAbsoluteLayout();D.bevel(n,l,t,true)
+    Native.Render(self,n);local t=self:Theme();local l=self:GetAbsoluteLayout();D.input(n,l,t)
     if self.error_ then D.edge(n,l.x,l.y,l.w,l.h,t.error,t.error) end
 end
 function Text:Destroy()
@@ -143,7 +143,7 @@ function Area:OnPanEnd(e) if e and self.panPointer_~=e.pointerId then return end
 function Area:OnWheel(_,dy) self.scrollY_=D.clamp(self.scrollY_-dy*30,0,math.max(0,#self:Lines()*(self:Theme().fontSize+6)-self:GetLayout().h+10));return true end
 function Area:Render(n)
     local l=self:GetAbsoluteLayout();local t=self:Theme();local step=t.fontSize+6
-    D.bevel(n,l,t,true,self:IsDisabled() and t.face or t.paper)
+    D.rect(n,l.x,l.y,l.w,l.h,self:IsDisabled() and t.face or t.paper);D.input(n,l,t)
     local rows=self:Lines();local a,b=self:GetSelectionRange();local cursorI,cursorRow=self:CursorLine()
     D.clip(n,{x=l.x+3,y=l.y+3,w=l.w-6,h=l.h-6},function()
         for i,row in ipairs(rows) do

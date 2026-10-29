@@ -52,7 +52,8 @@ function Button:Render(n)
     if self.props.icon then
         local size=self.props.iconSize or t.iconSize
         local ix=(self:GetText()=="") and (l.x+(l.w-size)/2) or (l.x+7)
-        Icons.draw(n,self.props.icon,ix+offset,l.y+(l.h-size)/2+offset,size,self:IsDisabled())
+        if self.props.titleControl then Icons.title(n,self.props.icon,l,t,self:IsDisabled(),offset)
+        else Icons.draw(n,self.props.icon,ix+offset,l.y+(l.h-size)/2+offset,size,self:IsDisabled()) end
         if self:GetText()~="" then x=l.x+size+13+offset;align=NVG_ALIGN_LEFT+NVG_ALIGN_MIDDLE end
     elseif self.props.menu then x=l.x+8;align=NVG_ALIGN_LEFT+NVG_ALIGN_MIDDLE end
     D.clip(n,{x=l.x+3,y=l.y+2,w=l.w-6,h=l.h-4},function()

@@ -3,6 +3,6 @@
   "commit": "9862abc066c9b83bf84c3e8ed1fc2d8d48f9bbf0",
   "path": "ofl/notosanssc/NotoSansSC[wght].ttf",
   "source_sha256": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da",
-  "derivative": "Maker Classic Sans; weight 400; Unicode ranges in tools/assets.py",
+  "derivative": "Maker Classic Sans; weights 400 and 700; Unicode ranges in tools/assets.py",
   "license": "OFL-1.1"
 }

@@ -40,8 +40,8 @@ def native(args):
         body = '''
 function Start()
  local ok,err=pcall(function()
-  local UI=require('urhox-libs/UI');UI.Init{theme='default-dark',fonts={{family='sans',weights={normal='win95/fonts/MakerClassicSans.ttf',bold='win95/fonts/MakerClassicSans.ttf'}}},scale=function() return 1 end}
-  local root=UI.Panel{width='100%',height='100%'};UI.SetRoot(root)
+  local UI=require('urhox-libs/UI');UI.Init{theme='default-dark',fonts=require('win95').Fonts.options(),scale=function() return 1 end}
+  require('win95').Fonts.attach(UI);local root=UI.Panel{width='100%',height='100%'};UI.SetRoot(root)
   local Win=require('win95');local c=Win.new(root)
   c:Add(c:Button{text='Native Win95 / 原生',width=230})
   c:Add(c:TextInput{value='中文输入',width=240})
@@ -71,7 +71,8 @@ end
             body += '''
 local originalStart=Start
 function Start()
- originalStart()
+ local ok,err=xpcall(originalStart,debug.traceback)
+ if not ok then print('[Win95] FAIL '..err);engine:Exit();return end
  assert(graphics:GetWidth()==WIN95_TEST_OPTIONS.width and graphics:GetHeight()==WIN95_TEST_OPTIONS.height,'requested native framebuffer size not applied')
  if WIN95_DEMO.tabs then WIN95_DEMO.tabs:SetValue(WIN95_TEST_OPTIONS.tab) end
  local frames=0;local samples={};local firstPixel
@@ -131,29 +132,34 @@ end
 
 def package(args):
     out=ROOT/'dist';out.mkdir(exist_ok=True)
-    target=out/'maker-win95-ui-1.0.0.zip'
+    target=out/'maker-win95-ui-1.1.0.zip'
     files=[]
     for base in ('scripts/win95','assets/win95','examples','docs','tests','tools'):
         files += [p for p in (ROOT/base).rglob('*') if p.is_file() and '__pycache__' not in p.parts]
     files += [ROOT/name for name in ('README.md','LICENSE','THIRD_PARTY.md')]
     with zipfile.ZipFile(target,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as z:
         for p in sorted(files):
-            info=zipfile.ZipInfo(p.relative_to(ROOT).as_posix(),date_time=(2026,10,28,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED
+            info=zipfile.ZipInfo(p.relative_to(ROOT).as_posix(),date_time=(2026,10,29,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED
             z.writestr(info,p.read_bytes())
         manifest=''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+p.relative_to(ROOT).as_posix()+'\n' for p in sorted(files))
-        info=zipfile.ZipInfo('MANIFEST.sha256',date_time=(2026,10,28,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED
+        info=zipfile.ZipInfo('MANIFEST.sha256',date_time=(2026,10,29,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED
         z.writestr(info,manifest)
     print(target, target.stat().st_size, 'bytes; sha256', hashlib.sha256(target.read_bytes()).hexdigest())
 
 def audit(args):
     source=Path(args.project).resolve() if args.project else ROOT
     files=list((source/'scripts/win95').rglob('*.lua'))
-    assert len(files)==15, 'incomplete library scripts'
+    assert len(files)==45, 'incomplete library scripts'
+    icons=list((source/'scripts/win95/icondata').glob('*.lua'))
+    assert len(icons)==29, 'incomplete icon data'
+    for icon in icons:
+        for size in (16,32):
+            assert (source/f'assets/win95/icons/{icon.stem}-{size}.png').is_file(), 'missing icon preview'
     for p in files:
         text=p.read_text('utf-8')
         assert not re.search(r'[A-Za-z]:[\\/]|MemesLiminal|frontend\.|CameraLook',text), 'host dependency: '+str(p)
         assert not re.search(r'\bUI\.(Init|SetRoot|Shutdown)\s*\(',text), 'library must not own global UI: '+str(p)
-    for name in ('README.md','LICENSE','THIRD_PARTY.md','examples/Host.lua','examples/gallery.lua','examples/desktop.lua','examples/minimal.lua','assets/win95/fonts/OFL.txt','assets/win95/fonts/MakerClassicSans.ttf','assets/win95/assistant/byte.png','assets/win95/images/garden.png','assets/win95/images/night.png'):
+    for name in ('README.md','LICENSE','THIRD_PARTY.md','examples/Host.lua','examples/gallery.lua','examples/desktop.lua','examples/minimal.lua','assets/win95/fonts/OFL.txt','assets/win95/fonts/W95font.otf','assets/win95/fonts/W95font-Bold.otf','assets/win95/fonts/W95font-OFL.txt','assets/win95/fonts/W95font-README.txt','assets/win95/fonts/MakerClassicSans-Bold.ttf','assets/win95/fonts/MakerClassicSans.ttf','assets/win95/assistant/byte.png','assets/win95/images/garden.png','assets/win95/images/night.png'):
         assert (source/name).is_file(), 'missing '+name
     for p in list((source/'docs').rglob('*.md'))+[source/'README.md',source/'THIRD_PARTY.md']:
         for href in re.findall(r'\]\(([^)]+)\)',p.read_text('utf-8')):
@@ -162,7 +168,7 @@ def audit(args):
     if (source/'MANIFEST.sha256').exists():
         for line in (source/'MANIFEST.sha256').read_text('utf-8').splitlines():
             digest,name=line.split('  ',1);assert hashlib.sha256((source/name).read_bytes()).hexdigest()==digest, 'manifest mismatch '+name
-    archive=ROOT/'dist/maker-win95-ui-1.0.0.zip'
+    archive=ROOT/'dist/maker-win95-ui-1.1.0.zip'
     if archive.exists() and source==ROOT:
         with zipfile.ZipFile(archive) as z:
             assert z.testzip() is None
@@ -185,14 +191,14 @@ def report(args):
         'menu':'gallery-windows-submenu-390x844-touch-1',
     }
     output=ROOT/'docs/screenshots';output.mkdir(parents=True,exist_ok=True)
-    data={'version':'1.0.0','date':'2026-10-28','platform':'Windows native; simulated touch and UI scale; actual DPR 1',
+    data={'version':'1.1.0','date':'2026-10-29','platform':'Windows native; simulated touch and UI scale; actual DPR 1',
           'runtime':json.loads((runtime_path(args).parent/'build.json').read_text('utf-8'))['commit'],'suites':[],'captures':[],
           'unverified':['physical Android/iOS','IME composition/candidate UI','mobile keyboard','Web export','hardware DPR > 1','screen reader']}
     for width,height,density,scale in [(1100,720,'compact','1'),(390,844,'touch','1'),(844,390,'touch','1'),(1100,720,'compact','2.0')]:
         label=f'gallery-controls-default-{width}x{height}-{density}-{scale}'
         log=(ROOT/'.tmp/test'/(label+'.log')).read_text('utf-8')
-        assert 'TEST PASS checks=29 failures=0' in log,label
-        data['suites'].append({'size':[width,height],'density':density,'ui_scale':float(scale),'checks':29,'failures':0,
+        assert 'TEST PASS checks=33 failures=0' in log,label
+        data['suites'].append({'size':[width,height],'density':density,'ui_scale':float(scale),'checks':33,'failures':0,
             'metrics':re.findall(r'\[Win95\] metric (.+)',log)})
     for name,label in shots.items():
         source=ROOT/'.tmp/capture'/label
@@ -200,7 +206,7 @@ def report(args):
         shutil.copyfile(Path(str(source)+'.png'),output/(name+'.png'))
         data['captures'].append({'file':'screenshots/'+name+'.png','configuration':label,'metrics':re.findall(r'\[Win95\] metric (.+)',log)})
     clean=list((ROOT/'.tmp/test').glob('clean-*.log'))
-    data['clean_install']={'native_suite_pass':any('TEST PASS checks=29 failures=0' in p.read_text('utf-8') for p in clean),
+    data['clean_install']={'native_suite_pass':any('TEST PASS checks=33 failures=0' in p.read_text('utf-8') for p in clean),
         'examples':sorted({p.name.split('-')[1] for p in (ROOT/'.tmp/capture').glob('clean-*.log') if 'CAPTURE PASS' in p.read_text('utf-8')})}
     (ROOT/'docs/test-results.json').write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n','utf-8')
     print('[Win95] REPORT written: compact metrics and 8 selected screenshots')
@@ -209,7 +215,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('command',choices=['probe','syntax','test','capture','preview','package','audit','report'])
     p.add_argument('--runtime');p.add_argument('--project',help='Clean extracted package root')
-    p.add_argument('--example',default='gallery',choices=['gallery','desktop','minimal'])
+    p.add_argument('--example',default='gallery',choices=['gallery','desktop','minimal','visual'])
     p.add_argument('--width',type=int,default=1200);p.add_argument('--height',type=int,default=800)
     p.add_argument('--scale',type=float,default=1);p.add_argument('--density',default='compact',choices=['compact','touch'])
     p.add_argument('--tab',default='controls',choices=['controls','forms','data','icons','media','windows'])
